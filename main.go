@@ -93,7 +93,10 @@ func main() {
     http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
         serveWs(server, w, r)
     })
-
+    http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("OK"))
+    })
     // サーバー起動
     addr := ":" + port
     log.Printf("Server starting on %s", addr)

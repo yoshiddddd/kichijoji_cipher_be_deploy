@@ -3,10 +3,10 @@ import(
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	// "log"
 	"net/http"
 	"os"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	"bytes"
 )
 func sendToDify(answers map[*Client]AnswerMessage) (string, error) {

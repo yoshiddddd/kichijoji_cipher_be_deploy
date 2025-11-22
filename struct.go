@@ -68,13 +68,28 @@ type ClientSendMessage struct {
 	Word     string `json:"word"`
 }
 type ResultSendMessage struct {
-	ClientId string `json:"clientId"`
-	Signal   string `json:"signal"`
-	Word     string `json:"word"`
-	Winner   string `json:"winner"`
+	ClientId     string `json:"clientId"`
+	Signal       string `json:"signal"`
+	Word         string `json:"word"`
+	Winner       string `json:"winner"`
+	User1Name    string `json:"user1Name"`
+	User2Name    string `json:"user2Name"`
+	User1Answer  string `json:"user1_answer"`
+	User2Answer  string `json:"user2_answer"`
+	User1Point   int    `json:"user1_point"`
+	User2Point   int    `json:"user2_point"`
+	Feedback     string `json:"feedback"`
 }
 type DifyResponse struct {
-    Answer string `json:"answer"`
+	Answer      string `json:"answer"`
+	Winner      string `json:"winner"`
+	User1Name   string `json:"user1Name"`
+	User2Name   string `json:"user2Name"`
+	User1Answer string `json:"user1_answer"`
+	User2Answer string `json:"user2_answer"`
+	User1Point  int    `json:"user1_point"`
+	User2Point  int    `json:"user2_point"`
+	Feedback    string `json:"feedback"`
 }
 
 type userCount int

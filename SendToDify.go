@@ -77,6 +77,10 @@ func sendToDify(answers map[*Client]AnswerMessage) (DifyResponse, error) {
     if err != nil {
         return DifyResponse{}, fmt.Errorf("error reading response body: %v", err)
     }
+
+    // レスポンスボディ全体をログ出力
+    fmt.Printf("Dify Response Body: %s\n", string(body))
+
 	var difyResponse DifyResponse
     if err := json.Unmarshal(body, &difyResponse); err != nil {
         return DifyResponse{}, fmt.Errorf("error unmarshalling response: %v", err)

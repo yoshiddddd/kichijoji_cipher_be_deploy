@@ -6,6 +6,7 @@ import(
 	// "log"
 	"net/http"
 	"os"
+	"strings"
 	// "github.com/joho/godotenv"
 	"bytes"
 )
@@ -88,8 +89,25 @@ func sendToDify(answers map[*Client]AnswerMessage) (DifyResponse, error) {
     }
 
 	// 2段階目: answerフィールドの中のJSON文字列を動的にパース
+	// マークダウンのコードブロック記号を除去
+	answerText := apiResponse.Answer
+	answerText = strings.TrimSpace(answerText)
+
+	// ```json ... ``` の形式の場合、取り除く
+	if strings.HasPrefix(answerText, "```json") {
+		answerText = strings.TrimPrefix(answerText, "```json")
+		answerText = strings.TrimSuffix(answerText, "```")
+		answerText = strings.TrimSpace(answerText)
+	} else if strings.HasPrefix(answerText, "```") {
+		answerText = strings.TrimPrefix(answerText, "```")
+		answerText = strings.TrimSuffix(answerText, "```")
+		answerText = strings.TrimSpace(answerText)
+	}
+
+	fmt.Printf("Cleaned Answer Text: %s\n", answerText)
+
 	var answerData map[string]interface{}
-	if err := json.Unmarshal([]byte(apiResponse.Answer), &answerData); err != nil {
+	if err := json.Unmarshal([]byte(answerText), &answerData); err != nil {
 		return DifyResponse{}, fmt.Errorf("error unmarshalling answer JSON: %v", err)
 	}
 

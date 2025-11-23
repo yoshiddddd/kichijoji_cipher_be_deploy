@@ -80,8 +80,18 @@ type ResultSendMessage struct {
 	User2Point   int    `json:"user2_point"`
 	Feedback     string `json:"feedback"`
 }
+type DifyAPIResponse struct {
+	Event          string `json:"event"`
+	TaskID         string `json:"task_id"`
+	ID             string `json:"id"`
+	MessageID      string `json:"message_id"`
+	ConversationID string `json:"conversation_id"`
+	Mode           string `json:"mode"`
+	Answer         string `json:"answer"`
+	CreatedAt      int64  `json:"created_at"`
+}
+
 type DifyResponse struct {
-	Answer      string `json:"answer"`
 	Winner      string `json:"winner"`
 	User1Name   string `json:"user1Name"`
 	User2Name   string `json:"user2Name"`

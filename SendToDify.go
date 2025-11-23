@@ -81,11 +81,73 @@ func sendToDify(answers map[*Client]AnswerMessage) (DifyResponse, error) {
     // レスポンスボディ全体をログ出力
     fmt.Printf("Dify Response Body: %s\n", string(body))
 
-	var difyResponse DifyResponse
-    if err := json.Unmarshal(body, &difyResponse); err != nil {
-        return DifyResponse{}, fmt.Errorf("error unmarshalling response: %v", err)
+	// 1段階目: Dify APIの外側のレスポンスをパース
+	var apiResponse DifyAPIResponse
+    if err := json.Unmarshal(body, &apiResponse); err != nil {
+        return DifyResponse{}, fmt.Errorf("error unmarshalling API response: %v", err)
     }
 
-    // `answer`フィールドの確認とログ出力
+	// 2段階目: answerフィールドの中のJSON文字列を動的にパース
+	var answerData map[string]interface{}
+	if err := json.Unmarshal([]byte(apiResponse.Answer), &answerData); err != nil {
+		return DifyResponse{}, fmt.Errorf("error unmarshalling answer JSON: %v", err)
+	}
+
+	// 動的フィールド名からデータを抽出
+	difyResponse := DifyResponse{
+		Winner:    getStringValue(answerData, "winner"),
+		User1Name: getStringValue(answerData, "user1Name"),
+		User2Name: getStringValue(answerData, "user2Name"),
+		Feedback:  getStringValue(answerData, "feedback"),
+	}
+
+	// ユーザー名をキーとした回答とポイントを取得
+	user1Name := difyResponse.User1Name
+	user2Name := difyResponse.User2Name
+
+	// User1の回答とポイント
+	if user1Name != "" {
+		// まず "user1Name_answer" の形式を試す
+		difyResponse.User1Answer = getStringValue(answerData, user1Name+"_answer")
+		difyResponse.User1Point = getIntValue(answerData, user1Name+"_point")
+	}
+
+	// User2の回答とポイント
+	if user2Name != "" {
+		// まず "user2Name_answer" の形式を試す
+		difyResponse.User2Answer = getStringValue(answerData, user2Name+"_answer")
+		difyResponse.User2Point = getIntValue(answerData, user2Name+"_point")
+
+		// 見つからない場合は "user2Name2_answer" の形式を試す
+		if difyResponse.User2Answer == "" {
+			difyResponse.User2Answer = getStringValue(answerData, user2Name+"2_answer")
+			difyResponse.User2Point = getIntValue(answerData, user2Name+"2_point")
+		}
+	}
+
+    // パース結果をログ出力
+    fmt.Printf("Parsed Dify Response - Winner: %s, User1: %s, User2: %s\n",
+		difyResponse.Winner, difyResponse.User1Name, difyResponse.User2Name)
+
     return difyResponse, nil
+}
+
+// ヘルパー関数: mapから文字列値を取得
+func getStringValue(data map[string]interface{}, key string) string {
+	if val, ok := data[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
+}
+
+// ヘルパー関数: mapから整数値を取得
+func getIntValue(data map[string]interface{}, key string) int {
+	if val, ok := data[key]; ok {
+		if num, ok := val.(float64); ok {
+			return int(num)
+		}
+	}
+	return 0
 }

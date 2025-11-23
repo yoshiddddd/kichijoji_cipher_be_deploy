@@ -50,7 +50,6 @@ func (s *Server) processAnswers(c *Client) {
         log.Printf("Error sending data to Dify: %v", err)
         return
     }
-    // log.Printf("Answer from Dify: %s", difyResponse.Answer)
     log.Printf("Winner: %s", difyResponse.Winner)
     log.Printf("User1Name: %s, User2Name: %s", difyResponse.User1Name, difyResponse.User2Name)
     log.Printf("User1Answer: %s, User2Answer: %s", difyResponse.User1Answer, difyResponse.User2Answer)
@@ -60,7 +59,7 @@ func (s *Server) processAnswers(c *Client) {
     // クライアントに結果を送信
     s.broadcastToClients(ResultSendMessage{
         Signal:      "result",
-        Word:        difyResponse.Answer,
+        Word:        difyResponse.Feedback,
         Winner:      difyResponse.Winner,
         User1Name:   difyResponse.User1Name,
         User2Name:   difyResponse.User2Name,
